@@ -49,9 +49,18 @@ class Stack3D:
                 vol.append(sitk.ReadImage(self._segToStack[crntTP]))
             else:
                 vol.append(seg_ref_blank)
-            
+
+
+        # cast everything to unsigned short
+        casted = []
+        caster = sitk.CastImageFilter()
+        caster.SetOutputPixelType(sitk.sitkUInt16)
+        print(f"[Stack3D] Cast images to unsigned short")
+        for img in vol:
+            casted.append(caster.Execute(img))
+
         # create 4D segmentation series    
-        seg4d = sitk.JoinSeries(vol)
+        seg4d = sitk.JoinSeries(casted)
 
         # write 4D segmentation image
         writer = sitk.ImageFileWriter()
